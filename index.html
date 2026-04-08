@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>수요조사</title>
+    <style>
+        body { font-family: sans-serif; background: #f0f2f5; padding: 20px; margin: 0; -webkit-text-size-adjust: none; }
+        .card { background: #fff; border-radius: 20px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); max-width: 450px; margin: 0 auto; }
+        h2 { text-align: center; color: #007aff; font-size: 20px; }
+        .item { display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-bottom: 1px solid #eee; }
+        .name { font-weight: bold; font-size: 16px; }
+        
+        /* 버튼과 입력창을 결합한 확실한 구조 */
+        .control { display: flex; align-items: center; border: 1px solid #ccc; border-radius: 10px; overflow: hidden; background: #fff; }
+        .btn { width: 45px; height: 45px; border: none; background: #f8f9fa; font-size: 20px; font-weight: bold; cursor: pointer; }
+        .btn:active { background: #ddd; }
+        .num-input { width: 40px; border: none; text-align: center; font-size: 16px; font-weight: bold; -moz-appearance: textfield; }
+        .num-input::-webkit-outer-spin-button, .num-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+
+        .total-box { background: #eee; padding: 15px; border-radius: 10px; text-align: center; margin-top: 20px; }
+        #total { font-size: 24px; font-weight: bold; color: #007aff; }
+        #submit { width: 100%; padding: 15px; background: #007aff; color: #fff; border: none; border-radius: 10px; font-size: 18px; font-weight: bold; margin-top: 20px; }
+        #submit:disabled { background: #ccc; }
+        input[type="text"], select { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ccc; border-radius: 8px; font-size: 16px; box-sizing: border-box; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h2>외환지원부 수요조사</h2>
+    <input type="text" id="name" placeholder="성함 입력">
+    <select id="team">
+        <option value="">소속 팀 선택</option>
+        <option value="외환송금팀">외환송금팀</option>
+        <option value="수출입지원팀">수출입지원팀</option>
+        <option value="특이거래점검팀">특이거래점검팀</option>
+    </select>
+
+    <div id="items-list">
+        <div class="item">
+            <span class="name">창고 (20만)</span>
+            <div class="control">
+                <button class="btn" onclick="adj('창고',-1)">-</button>
+                <input type="number" class="num-input" id="val-창고" value="0" onchange="calc()" readonly>
+                <button class="btn" onclick="adj('창고',1)">+</button>
+            </div>
+        </div>
+        <div class="item">
+            <span class="name">뚝심한우 (20만)</span>
+            <div class="control">
+                <button class="btn" onclick="adj('뚝심한우',-1)">-</button>
+                <input type="number" class="num-input" id="val-뚝심한우" value="0" onchange="calc()" readonly>
+                <button class="btn" onclick="adj('뚝심한우',1)">+</button>
+            </div>
+        </div>
+        <div class="item">
+            <span class="name">포시즌 (20만)</span>
+            <div class="control">
+                <button class="btn" onclick="adj('포시즌',-1)">-</button>
+                <input type="number" class="num-input" id="val-포시즌" value="0" onchange="calc()" readonly>
+                <button class="btn" onclick="adj('포시즌',1)">+</button>
+            </div>
+        </div>
+        <div class="item">
+            <span class="name">아띠제 (10만)</span>
+            <div class="control">
+                <button class="btn" onclick="adj('아띠제',-1)">-</button>
+                <input type="number" class="num-input" id="val-아띠제" value="0" onchange="calc()" readonly>
+                <button class="btn" onclick="adj('아띠제',1)">+</button>
+            </div>
+        </div>
+        <div class="item">
+            <span class="name">식권 20장 (10만)</span>
+            <div class="control">
+                <button class="btn" onclick="adj('식권',-1)">-</button>
+                <input type="number" class="num-input" id="val-식권" value="0" onchange="calc()" readonly>
+                <button class="btn" onclick="adj('식권',1)">+</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="total-box">
+        합계: <span id="total">0</span>원<br>
+        <small id="msg">40만원을 맞춰주세요.</small>
+    </div>
+    <button id="submit" onclick="send()" disabled>제출하기</button>
+</div>
+
+<script>
+    const url = 'INSERT_YOUR_URL_HERE'; // 여기에 URL 꼭 넣으세요!
+
+    function adj(id, d) {
+        const el = document.getElementById('val-' + id);
+        let v = parseInt(el.value) + d;
+        if (v < 0) v = 0;
+        if (id === '포시즌' && v > 1) { alert('포시즌은 1매만 가능합니다.'); v = 1; }
+        el.value = v;
+        calc();
+    }
+
+    function calc() {
+        const prices = { '창고':200000, '뚝심한우':200000, '포시즌':200000, '아띠제':100000, '식권':100000 };
+        let sum = 0;
+        for (let key in prices) {
+            sum += document.getElementById('val-' + key).value * prices[key];
+        }
+        document.getElementById('total').innerText = sum.toLocaleString();
+        const ok = (sum === 400000);
+        document.getElementById('submit').disabled = !ok;
+        document.getElementById('msg').innerText = ok ? "✅ 제출 가능" : (sum > 400000 ? "❌ 한도 초과" : (400000-sum).toLocaleString() + "원 부족");
+    }
+
+    function send() {
+        const n = document.getElementById('name').value;
+        const t = document.getElementById('team').value;
+        if(!n || !t) return alert('정보를 입력하세요.');
+        
+        const btn = document.getElementById('submit');
+        btn.innerText = "전송중...";
+        btn.disabled = true;
+
+        const results = { 
+            '창고': document.getElementById('val-창고').value,
+            '뚝심한우': document.getElementById('val-뚝심한우').value,
+            '포시즌': document.getElementById('val-포시즌').value,
+            '아띠제': document.getElementById('val-아띠제').value,
+            '식권': document.getElementById('val-식권').value
+        };
+
+        fetch(url, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ name: n, team: t, items: results, total: document.getElementById('total').innerText }) })
+        .then(() => { alert('제출 완료!'); location.reload(); })
+        .catch(() => { alert('완료! (시트를 확인하세요)'); location.reload(); });
+    }
+</script>
+</body>
+</html>
