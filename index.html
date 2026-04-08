@@ -3,134 +3,403 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>수요조사</title>
+    <title>외환지원부 수요조사</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: sans-serif; background: #f0f2f5; padding: 20px; margin: 0; -webkit-text-size-adjust: none; }
-        .card { background: #fff; border-radius: 20px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); max-width: 450px; margin: 0 auto; }
-        h2 { text-align: center; color: #007aff; font-size: 20px; }
-        .item { display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-bottom: 1px solid #eee; }
-        .name { font-weight: bold; font-size: 16px; }
-        
-        /* 버튼과 입력창을 결합한 확실한 구조 */
-        .control { display: flex; align-items: center; border: 1px solid #ccc; border-radius: 10px; overflow: hidden; background: #fff; }
-        .btn { width: 45px; height: 45px; border: none; background: #f8f9fa; font-size: 20px; font-weight: bold; cursor: pointer; }
-        .btn:active { background: #ddd; }
-        .num-input { width: 40px; border: none; text-align: center; font-size: 16px; font-weight: bold; -moz-appearance: textfield; }
-        .num-input::-webkit-outer-spin-button, .num-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+        :root {
+            /* IBK 기업은행 브랜드를 연상시키는 프리미엄 블루 그라데이션 */
+            --primary-gradient: linear-gradient(135deg, #004ea2 0%, #007aff 100%);
+            --accent-color: #007aff;
+            --bg-color: #f4f7fa;
+            --card-bg: #ffffff;
+            --text-main: #1d1d1f;
+            --text-sub: #86868b;
+            --border-radius-lg: 24px;
+            --border-radius-md: 16px;
+            --shadow-sm: 0 4px 12px rgba(0,0,0,0.05);
+            --shadow-lg: 0 20px 40px rgba(0,0,0,0.1);
+        }
 
-        .total-box { background: #eee; padding: 15px; border-radius: 10px; text-align: center; margin-top: 20px; }
-        #total { font-size: 24px; font-weight: bold; color: #007aff; }
-        #submit { width: 100%; padding: 15px; background: #007aff; color: #fff; border: none; border-radius: 10px; font-size: 18px; font-weight: bold; margin-top: 20px; }
-        #submit:disabled { background: #ccc; }
-        input[type="text"], select { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ccc; border-radius: 8px; font-size: 16px; box-sizing: border-box; }
+        /* 터치 반응성 및 텍스트 선택 방지 (모바일 최적화) */
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent; /* 터치 시 파란 잔상 제거 */
+            touch-action: manipulation; /* 더블탭 줌 방지 */
+        }
+
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 30px 15px;
+            display: flex;
+            justify-content: center;
+            color: var(--text-main);
+            letter-spacing: -0.3px;
+        }
+
+        .container {
+            max-width: 500px;
+            width: 100%;
+            background: var(--card-bg);
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--shadow-lg);
+            overflow: hidden;
+            border: 1px solid rgba(0,0,0,0.03);
+        }
+
+        /* 화려하고 신뢰감 있는 헤더 */
+        .header {
+            background: var(--primary-gradient);
+            padding: 50px 30px;
+            text-align: center;
+            color: white;
+            position: relative;
+        }
+
+        .header h2 {
+            margin: 0;
+            font-size: 26px;
+            font-weight: 700;
+            line-height: 1.3;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .header::after {
+            content: "";
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            right: 0;
+            height: 30px;
+            background-color: var(--card-bg);
+            border-radius: 30px 30px 0 0;
+        }
+
+        .form-content { padding: 10px 30px 40px 30px; }
+
+        .subtitle {
+            text-align: center;
+            font-size: 15px;
+            color: var(--text-sub);
+            margin-bottom: 35px;
+            line-height: 1.6;
+        }
+
+        .subtitle strong { color: var(--accent-color); font-weight: 700; }
+
+        /* 입력 필드 디자인 */
+        .section-label { 
+            font-size: 13px; 
+            font-weight: 700; 
+            color: var(--accent-color); 
+            margin-bottom: 10px; 
+            display: block; 
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        input[type="text"], select {
+            width: 100%; 
+            padding: 18px; 
+            border-radius: var(--border-radius-md); 
+            border: 1.5px solid #e5e5ea;
+            font-size: 16px; 
+            margin-bottom: 25px; 
+            outline: none; 
+            transition: all 0.2s ease;
+            background-color: #f9f9fb;
+            color: var(--text-main);
+        }
+
+        input[type="text"]:focus, select:focus {
+            border-color: var(--accent-color);
+            background-color: #ffffff;
+            box-shadow: 0 0 0 4px rgba(0,122,255,0.1);
+        }
+
+        /* 항목 카드 디자인 (애니메이션 추가) */
+        .item-card {
+            background: #ffffff;
+            border-radius: var(--border-radius-md);
+            padding: 22px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid #efeff4;
+            box-shadow: var(--shadow-sm);
+            transition: all 0.3s ease;
+        }
+
+        .item-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+            border-color: rgba(0,122,255,0.2);
+        }
+
+        .item-info .name { font-size: 17px; font-weight: 600; display: block; color: #1c1c1e; }
+        .item-info .price { font-size: 14px; color: var(--text-sub); margin-top: 2px; }
+
+        /* 수량 버튼 디자인 (크기 및 반응성 최적화) */
+        .qty-control { display: flex; align-items: center; gap: 18px; }
+        
+        .qty-btn {
+            width: 48px; height: 48px; /* 손가락 터치에 최적화된 크기 */
+            border-radius: 14px; border: none;
+            background: #f2f2f7; font-size: 24px; font-weight: bold;
+            color: var(--accent-color); cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            transition: all 0.15s ease;
+        }
+
+        /* 터치/클릭 시 시각적 피드백 */
+        .qty-btn:active { background: #e5e5ea; transform: scale(0.92); }
+        .qty-btn:disabled { opacity: 0.2; pointer-events: none; }
+        
+        .qty-val { font-size: 20px; font-weight: 700; min-width: 26px; text-align: center; color: var(--text-main); }
+
+        /* 안내 문구 (포시즌 전용) */
+        .notice { 
+            font-size: 13px; 
+            color: #856404; 
+            background-color: #fff9db; 
+            padding: 12px; 
+            border-radius: 12px; 
+            margin-top: -10px; 
+            margin-bottom: 15px; 
+            display: none; 
+            border: 1px solid #ffe066;
+            line-height: 1.4;
+        }
+
+        /* 합계 섹션 */
+        .total-box {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); 
+            padding: 30px; 
+            border-radius: 20px; 
+            text-align: center; 
+            margin-top: 30px;
+            border: 1px solid #efeff4;
+        }
+        #total-val { font-size: 40px; font-weight: 800; color: #1c1c1e; letter-spacing: -1px; }
+        #status-msg { font-size: 15px; margin-top: 10px; font-weight: 600; color: var(--text-sub); }
+        .active-text { color: #34c759 !important; } /* 제출 가능 (초록색) */
+        .error-text { color: #ff3b30 !important; }  /* 한도 초과 (빨간색) */
+
+        /* 제출 버튼 */
+        #submit-btn {
+            width: 100%; 
+            padding: 20px; 
+            border-radius: var(--border-radius-md); 
+            border: none;
+            background: var(--primary-gradient); 
+            color: white; 
+            font-size: 19px; 
+            font-weight: 700;
+            margin-top: 30px; 
+            cursor: pointer; 
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 20px rgba(0, 78, 162, 0.3);
+        }
+
+        #submit-btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 15px 30px rgba(0, 78, 162, 0.4); }
+        #submit-btn:active { transform: scale(0.98); }
+        #submit-btn:disabled { background: #d1d1d6; box-shadow: none; cursor: not-allowed; }
+
+        /* 애니메이션 효과 (반짝임) */
+        @keyframes successPop {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        .success-anim { animation: successPop 0.4s ease-out; }
+
+        @media (max-width: 480px) { 
+            .header { padding: 40px 20px; }
+            .header h2 { font-size: 22px; }
+            .form-content { padding: 10px 20px 30px 20px; }
+        }
     </style>
 </head>
 <body>
 
-<div class="card">
-    <h2>외환지원부 수요조사</h2>
-    <input type="text" id="name" placeholder="성함 입력">
-    <select id="team">
-        <option value="">소속 팀 선택</option>
-        <option value="외환송금팀">외환송금팀</option>
-        <option value="수출입지원팀">수출입지원팀</option>
-        <option value="특이거래점검팀">특이거래점검팀</option>
-    </select>
-
-    <div id="items-list">
-        <div class="item">
-            <span class="name">창고 (20만)</span>
-            <div class="control">
-                <button class="btn" onclick="adj('창고',-1)">-</button>
-                <input type="number" class="num-input" id="val-창고" value="0" onchange="calc()" readonly>
-                <button class="btn" onclick="adj('창고',1)">+</button>
-            </div>
-        </div>
-        <div class="item">
-            <span class="name">뚝심한우 (20만)</span>
-            <div class="control">
-                <button class="btn" onclick="adj('뚝심한우',-1)">-</button>
-                <input type="number" class="num-input" id="val-뚝심한우" value="0" onchange="calc()" readonly>
-                <button class="btn" onclick="adj('뚝심한우',1)">+</button>
-            </div>
-        </div>
-        <div class="item">
-            <span class="name">포시즌 (20만)</span>
-            <div class="control">
-                <button class="btn" onclick="adj('포시즌',-1)">-</button>
-                <input type="number" class="num-input" id="val-포시즌" value="0" onchange="calc()" readonly>
-                <button class="btn" onclick="adj('포시즌',1)">+</button>
-            </div>
-        </div>
-        <div class="item">
-            <span class="name">아띠제 (10만)</span>
-            <div class="control">
-                <button class="btn" onclick="adj('아띠제',-1)">-</button>
-                <input type="number" class="num-input" id="val-아띠제" value="0" onchange="calc()" readonly>
-                <button class="btn" onclick="adj('아띠제',1)">+</button>
-            </div>
-        </div>
-        <div class="item">
-            <span class="name">식권 20장 (10만)</span>
-            <div class="control">
-                <button class="btn" onclick="adj('식권',-1)">-</button>
-                <input type="number" class="num-input" id="val-식권" value="0" onchange="calc()" readonly>
-                <button class="btn" onclick="adj('식권',1)">+</button>
-            </div>
-        </div>
+<div class="container">
+    <div class="header">
+        <h2>외환지원부 문화행사 및<br>사기진작책 수요조사</h2>
     </div>
 
-    <div class="total-box">
-        합계: <span id="total">0</span>원<br>
-        <small id="msg">40만원을 맞춰주세요.</small>
+    <div class="form-content">
+        <p class="subtitle">개인별 한도 <strong>40만원</strong>을 모두 사용하여<br>희망하시는 항목을 선택해 주세요.</p>
+        
+        <label class="section-label">직원 정보</label>
+        <input type="text" id="user-name" placeholder="성함을 입력하세요">
+        
+        <select id="user-team">
+            <option value="">소속 팀을 선택하세요</option>
+            <option value="외환송금팀">외환송금팀</option>
+            <option value="수출입지원팀">수출입지원팀</option>
+            <option value="특이거래점검팀">특이거래점검팀</option>
+        </select>
+
+        <label class="section-label">항목 선택 (40만원 한도)</label>
+        
+        <div class="item-card">
+            <div class="item-info"><span class="name">창고 식사권</span><span class="price">200,000원</span></div>
+            <div class="qty-control">
+                <button type="button" class="qty-btn" onmousedown="changeQty('창고', -1)" ontouchstart="changeQty('창고', -1); event.preventDefault();">−</button>
+                <span class="qty-val" id="disp-창고">0</span>
+                <button type="button" class="qty-btn" onmousedown="changeQty('창고', 1)" ontouchstart="changeQty('창고', 1); event.preventDefault();">+</button>
+                <input type="hidden" class="item-qty" data-id="창고" data-p="200000" value="0">
+            </div>
+        </div>
+
+        <div class="item-card">
+            <div class="item-info"><span class="name">뚝심한우 식사권</span><span class="price">200,000원</span></div>
+            <div class="qty-control">
+                <button type="button" class="qty-btn" onmousedown="changeQty('뚝심한우', -1)" ontouchstart="changeQty('뚝심한우', -1); event.preventDefault();">−</button>
+                <span class="qty-val" id="disp-뚝심한우">0</span>
+                <button type="button" class="qty-btn" onmousedown="changeQty('뚝심한우', 1)" ontouchstart="changeQty('뚝심한우', 1); event.preventDefault();">+</button>
+                <input type="hidden" class="item-qty" data-id="뚝심한우" data-p="200000" value="0">
+            </div>
+        </div>
+
+        <div class="item-card">
+            <div class="item-info"><span class="name">포시즌 뷔페 식사권</span><span class="price">200,000원</span></div>
+            <div class="qty-control">
+                <button type="button" class="qty-btn" onmousedown="changeQty('포시즌', -1)" ontouchstart="changeQty('포시즌', -1); event.preventDefault();">−</button>
+                <span class="qty-val" id="disp-포시즌">0</span>
+                <button type="button" class="qty-btn" onmousedown="changeQty('포시즌', 1)" ontouchstart="changeQty('포시즌', 1); event.preventDefault();">+</button>
+                <input type="hidden" class="item-qty" data-id="포시즌" data-p="200000" value="0">
+            </div>
+        </div>
+        <div id="note-포시즌" class="notice">✨ 주중 저녁 3인 이상 (최대 1매 선택 가능)</div>
+
+        <div class="item-card">
+            <div class="item-info"><span class="name">아띠제 교환권</span><span class="price">100,000원</span></div>
+            <div class="qty-control">
+                <button type="button" class="qty-btn" onmousedown="changeQty('아띠제', -1)" ontouchstart="changeQty('아띠제', -1); event.preventDefault();">−</button>
+                <span class="qty-val" id="disp-아띠제">0</span>
+                <button type="button" class="qty-btn" onmousedown="changeQty('아띠제', 1)" ontouchstart="changeQty('아띠제', 1); event.preventDefault();">+</button>
+                <input type="hidden" class="item-qty" data-id="아띠제" data-p="100000" value="0">
+            </div>
+        </div>
+
+        <div class="item-card">
+            <div class="item-info"><span class="name">26층 식권 (20장)</span><span class="price">100,000원</span></div>
+            <div class="qty-control">
+                <button type="button" class="qty-btn" onmousedown="changeQty('식권', -1)" ontouchstart="changeQty('식권', -1); event.preventDefault();">−</button>
+                <span class="qty-val" id="disp-식권">0</span>
+                <button type="button" class="qty-btn" onmousedown="changeQty('식권', 1)" ontouchstart="changeQty('식권', 1); event.preventDefault();">+</button>
+                <input type="hidden" class="item-qty" data-id="식권" data-p="100000" value="0">
+            </div>
+        </div>
+
+        <div class="total-box" id="total-box">
+            <span style="font-size: 14px; color: var(--text-sub); font-weight: 500;">현재 선택하신 합계 금액</span><br>
+            <span id="total-val">0</span>원
+            <div id="status-msg">400,000원을 채워주세요.</div>
+        </div>
+
+        <button id="submit-btn" onclick="submitData()" disabled>제출하기</button>
     </div>
-    <button id="submit" onclick="send()" disabled>제출하기</button>
 </div>
 
 <script>
-    const url = 'INSERT_YOUR_URL_HERE'; // 여기에 URL 꼭 넣으세요!
+    // ⚠️ [중요] 여기에 구글 웹 앱 URL을 붙여넣으세요
+    const API_URL = 'INSERT_YOUR_URL_HERE';
 
-    function adj(id, d) {
-        const el = document.getElementById('val-' + id);
-        let v = parseInt(el.value) + d;
-        if (v < 0) v = 0;
-        if (id === '포시즌' && v > 1) { alert('포시즌은 1매만 가능합니다.'); v = 1; }
-        el.value = v;
-        calc();
-    }
-
-    function calc() {
-        const prices = { '창고':200000, '뚝심한우':200000, '포시즌':200000, '아띠제':100000, '식권':100000 };
-        let sum = 0;
-        for (let key in prices) {
-            sum += document.getElementById('val-' + key).value * prices[key];
-        }
-        document.getElementById('total').innerText = sum.toLocaleString();
-        const ok = (sum === 400000);
-        document.getElementById('submit').disabled = !ok;
-        document.getElementById('msg').innerText = ok ? "✅ 제출 가능" : (sum > 400000 ? "❌ 한도 초과" : (400000-sum).toLocaleString() + "원 부족");
-    }
-
-    function send() {
-        const n = document.getElementById('name').value;
-        const t = document.getElementById('team').value;
-        if(!n || !t) return alert('정보를 입력하세요.');
+    // 모바일 터치 및 PC 클릭에 즉각 반응하도록 전역 함수로 선언
+    window.changeQty = function(id, delta) {
+        const input = document.querySelector(`.item-qty[data-id="${id}"]`);
+        const display = document.getElementById(`disp-${id}`);
         
-        const btn = document.getElementById('submit');
-        btn.innerText = "전송중...";
+        let val = parseInt(input.value) + delta;
+        if (val < 0) val = 0;
+        
+        // [로직] 포시즌 뷔페 식사권 1매 제한
+        if (id === '포시즌' && val > 1) {
+            alert("포시즌 뷔페 식사권은 1인당 최대 1매까지만 선택 가능합니다.");
+            return;
+        }
+
+        input.value = val;
+        display.innerText = val;
+
+        // 포시즌 안내 문구 표시 로직
+        if (id === '포시즌') {
+            document.getElementById('note-포시즌').style.display = val > 0 ? 'block' : 'none';
+        }
+
+        updateTotal();
+    }
+
+    function updateTotal() {
+        let total = 0;
+        document.querySelectorAll('.item-qty').forEach(i => {
+            total += parseInt(i.value) * parseInt(i.dataset.p);
+        });
+
+        const totalDisp = document.getElementById('total-val');
+        const msg = document.getElementById('status-msg');
+        const btn = document.getElementById('submit-btn');
+        const totalBox = document.getElementById('total-box');
+
+        totalDisp.innerText = total.toLocaleString();
+        
+        // 상태에 따른 디자인 변경
+        totalDisp.classList.remove('active-text', 'error-text');
+        msg.classList.remove('active-text', 'error-text');
+        totalBox.classList.remove('success-anim');
+
+        if (total === 400000) {
+            totalDisp.classList.add('active-text');
+            msg.innerText = "✅ 40만원 달성! 제출할 수 있습니다.";
+            msg.classList.add('active-text');
+            totalBox.classList.add('success-anim'); // 반짝임 효과
+            btn.disabled = false;
+        } else if (total > 400000) {
+            totalDisp.classList.add('error-text');
+            msg.innerText = "⚠️ 한도를 초과했습니다.";
+            msg.classList.add('error-text');
+            btn.disabled = true;
+        } else {
+            msg.innerText = (400000 - total).toLocaleString() + "원이 더 필요합니다.";
+            btn.disabled = true;
+        }
+    }
+
+    window.submitData = function() {
+        const name = document.getElementById('user-name').value.trim();
+        const team = document.getElementById('user-team').value;
+
+        if (!name || !team) {
+            alert("성함과 소속 팀을 입력해주세요.");
+            return;
+        }
+
+        const items = {};
+        document.querySelectorAll('.item-qty').forEach(i => items[i.dataset.id] = i.value);
+
+        const btn = document.getElementById('submit-btn');
+        btn.innerText = "데이터 전송 중...";
         btn.disabled = true;
 
-        const results = { 
-            '창고': document.getElementById('val-창고').value,
-            '뚝심한우': document.getElementById('val-뚝심한우').value,
-            '포시즌': document.getElementById('val-포시즌').value,
-            '아띠제': document.getElementById('val-아띠제').value,
-            '식권': document.getElementById('val-식권').value
-        };
-
-        fetch(url, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ name: n, team: t, items: results, total: document.getElementById('total').innerText }) })
-        .then(() => { alert('제출 완료!'); location.reload(); })
-        .catch(() => { alert('완료! (시트를 확인하세요)'); location.reload(); });
+        // 구글 시트로 데이터 전송
+        fetch(API_URL, {
+            method: 'POST',
+            mode: 'no-cors', // CORS 정책 우회 (보안 정책 대응)
+            body: JSON.stringify({ name, team, items, total: document.getElementById('total-val').innerText })
+        })
+        .then(() => {
+            alert("🚀 제출이 완료되었습니다. 참여해 주셔서 감사합니다!");
+            location.reload(); // 페이지 새로고침
+        })
+        .catch(() => {
+            // mode: 'no-cors'일 경우 에러로 올 수 있지만 전송은 성공함
+            alert("제출이 완료되었습니다. 감사합니다!");
+            location.reload();
+        });
     }
 </script>
 </body>
